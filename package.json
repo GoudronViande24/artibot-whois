@@ -1,0 +1,28 @@
+{
+  "name": "artibot-whois",
+  "version": "1.4.0",
+  "description": "WHOIS extension for Artibot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GoudronViande24/artibot-whois.git"
+  },
+  "keywords": [
+    "whois",
+    "js",
+    "artibot",
+    "artivain",
+    "domain",
+    "discord",
+    "discord.js"
+  ],
+  "author": "GoudronViande24",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GoudronViande24/artibot-whois/issues"
+  },
+  "homepage": "https://github.com/GoudronViande24/artibot-whois#readme"
+}
