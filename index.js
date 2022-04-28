@@ -3,7 +3,12 @@ import Artibot, { Module, SlashCommand } from "artibot";
 import Localizer from "artibot-localizer";
 import { CommandInteraction } from "discord.js";
 import { createRequire } from 'module';
+import path from "path";
 import whois from "whois";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const require = createRequire(import.meta.url);
 const { version } = require('./package.json');
@@ -48,7 +53,7 @@ export default ({config: {lang}}) => {
 }
 
 const localizer = new Localizer({
-	filePath: "locales.json"
+	filePath: path.join(__dirname, "locales.json")
 });
 
 
