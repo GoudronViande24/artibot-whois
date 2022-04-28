@@ -1,6 +1,6 @@
 {
   "name": "artibot-whois",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "WHOIS extension for Artibot",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/GoudronViande24/artibot-whois#readme",
   "dependencies": {
-    "artibot": "Artivain/artibot#v3",
+    "artibot": "^3.0.2",
     "whois": "^2.13.9"
   },
   "devDependencies": {
