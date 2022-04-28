@@ -4,8 +4,9 @@
   "description": "WHOIS extension for Artibot",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nodemon testing.js"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GoudronViande24/artibot-whois.git"
@@ -24,5 +25,12 @@
   "bugs": {
     "url": "https://github.com/GoudronViande24/artibot-whois/issues"
   },
-  "homepage": "https://github.com/GoudronViande24/artibot-whois#readme"
+  "homepage": "https://github.com/GoudronViande24/artibot-whois#readme",
+  "dependencies": {
+    "artibot": "^3.0.1",
+    "whois": "^2.13.9"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
 }

@@ -1,21 +1,182 @@
-// Manifest file for whois module
+import { SlashCommandBuilder } from "@discordjs/builders";
+import Artibot, { Module, SlashCommand } from "artibot";
+import Localizer from "artibot-localizer";
+import { CommandInteraction } from "discord.js";
+import { createRequire } from 'module';
+import whois from "whois";
 
-module.exports = {
-	manifest: {
+const require = createRequire(import.meta.url);
+const { version } = require('./package.json');
 
-		manifestVersion: 1,
-		moduleVersion: "1.3.0",
+/**
+ * WHOIS slash command
+ * Extension for Artibot
+ * Uses Node.js WHOIS module to get info about a domain
+ * 
+ * @author GoudronViande24
+ * @license MIT
+ * @param {Artibot} artibot
+ * @returns {Module}
+ */
+export default ({config: {lang}}) => {
+	localizer.setLocale(lang);
+
+	return new Module({
+		id: "whois",
 		name: "WHOIS",
-		supportedLocales: [
+		version,
+		langs: [
 			"en",
 			"fr"
 		],
+		repo: "GoudronViande24/artibot-whois",
 		parts: [
-			{
+			new SlashCommand({
 				id: "whois",
-				type: "slashcommand",
-				path: "whois.js"
-			}
+				data: new SlashCommandBuilder()
+					.setName("whois")
+					.setDescription(localizer._("Get info on a domain"))
+					.addStringOption(option =>
+						option.setName("domain")
+							.setDescription(localizer._("The domain to verify"))
+							.setRequired(true)
+					),
+				mainFunction
+			})
 		]
-	}
-};
+	});
+}
+
+const localizer = new Localizer({
+	filePath: "./locales.json"
+});
+
+
+/**
+ * Function executed when the slash command is sent
+ * @param {CommandInteraction} interaction 
+ * @param {Artibot} artibot 
+ */
+async function mainFunction(interaction, { config, createEmbed }) {
+	const domain = interaction.options.getString("domain");
+
+	if (!domain.endsWith(".com") && !domain.endsWith(".net") && !domain.endsWith(".edu")) {
+		const errorEmbed = createEmbed()
+			.setColor("RED")
+			.setTitle(`WHOIS - ${domain}`)
+			.setDescription(localizer.__("`[[0]]` is not a valid domain.\nThis WHOIS only supports `.com`, `.net` and `.edu` TLDs.", { placeholders: [domain] }));
+
+		return await interaction.reply({
+			embeds: [errorEmbed],
+			ephemeral: true
+		});
+	};
+
+	whois.lookup(domain, async (err, data) => {
+
+		if (err) {
+			const errorEmbed = createEmbed()
+				.setColor("RED")
+				.setTitle(`WHOIS - ${domain}`)
+				.setDescription(localizer._("An error occured."));
+
+			return await interaction.reply({
+				embeds: [errorEmbed],
+				ephemeral: true
+			});
+		};
+
+		// Delete the extra stuff at the end of the response
+		data = data.substring(0, (data.indexOf("\nURL of the ICANN WHOIS Data Problem Reporting System:") - 1));
+
+		let results = data.split("\n").reduce((obj, str, index) => {
+			let strParts = str.split(":");
+
+			if (strParts[0] && strParts[1]) {
+				let [key, ...rest] = str.split(':');
+				key = key.replace(/\s+/g, '');
+				if (key !== key.toUpperCase()) key = key.charAt(0).toLowerCase() + key.slice(1) // Make first letter lowercase
+				else key = key.toLowerCase(); // Make the key all lowercase if it's an acronym
+				let value = rest.join(':').trim();
+
+				// Check if key already exists
+				if (key in obj) {
+					// Check if value is a string
+					if (typeof obj[key] == "string") {
+						obj[key] = [obj[key], value];
+					} else { // Else add value to the array
+						obj[key].push(value);
+					};
+				} else {
+					obj[key] = value;
+				};
+			};
+
+			return obj;
+		}, {});
+
+		// Check if no data is returned (domain not found)
+		if (Object.keys(results).length === 0) {
+			const errorEmbed = createEmbed()
+				.setColor("RED")
+				.setTitle(`WHOIS - ${domain}`)
+				.setDescription(localizer.__("Domain `[[0]]` not found.", { placeholders: [domain] }));
+
+			return await interaction.reply({
+				embeds: [errorEmbed],
+				ephemeral: true
+			});
+		};
+
+		if (typeof results.domainStatus == "string") {
+			let code = results.domainStatus.split("#")[1].split(/[^A-Za-z]/)[0];
+			var status = `[${code}](http://www.icann.org/epp#${code})`;
+		} else {
+			var status = "";
+			results.domainStatus.forEach(value => {
+				let code = value.split("#")[1].split(/[^A-Za-z]/)[0];
+				status += `[${code}](http://www.icann.org/epp#${code})\n`;
+			});
+			status = status.trim();
+		};
+
+		if (typeof results.nameServer == "string") {
+			var ns = results.nameServer;
+		} else {
+			var ns = "";
+			results.nameServer.forEach(value => {
+				ns += `${value}\n`;
+			});
+			ns = ns.trim();
+		};
+
+		if (results.registrantOrganization) {
+			var name = results.registrantOrganization;
+		} else if (results.registrantName) {
+			var name = results.registrantName;
+		} else {
+			var name = localizer._("Name not found");
+		};
+
+		const embed = createEmbed()
+			.setTitle(`WHOIS - ${domain}`)
+			.setDescription(`${localizer.__("Here are the results for [[0]]", { placeholders: [domain] })}\n[${localizer._("See complete list online")}](https://who.is/whois/${domain})`)
+			.addField(localizer._("Registrar"), `[${results.registrar}](${results.registrarURL})`, true)
+			.addField(localizer._("Registrar WHOIS server"), results.registrarWHOISServer, true)
+			.addField(localizer._("Domain registration date"), results.creationDate, true)
+			.addField(localizer._("Email for abuse report"), results.registrarAbuseContactEmail, true)
+			.addField(localizer._("Domain status (ICANN)"), status, true)
+			.addField(localizer._("Owner's name"), name, true)
+			.addField(localizer._("DNSSEC status"), results.dnssec, true)
+			.addField(localizer._("DNS server(s)"), ns, true);
+
+		if (results.reseller) {
+			embed.addField(localizer._("Reseller"), results.reseller, true);
+		};
+
+		return await interaction.reply({
+			embeds: [embed]
+		});
+
+	});
+}
