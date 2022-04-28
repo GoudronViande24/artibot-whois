@@ -48,7 +48,7 @@ export default ({config: {lang}}) => {
 }
 
 const localizer = new Localizer({
-	filePath: "./locales.json"
+	filePath: "locales.json"
 });
 
 
