@@ -61,12 +61,12 @@ const localizer = new Localizer({
  * @param {CommandInteraction} interaction 
  * @param {Artibot} artibot 
  */
-async function mainFunction(interaction, { config, createEmbed }) {
+async function mainFunction(interaction, { createEmbed }) {
 	const domain = interaction.options.getString("domain");
 
 	if (!domain.endsWith(".com") && !domain.endsWith(".net") && !domain.endsWith(".edu")) {
 		const errorEmbed = createEmbed()
-			.setColor("RED")
+			.setColor("Red")
 			.setTitle(`WHOIS - ${domain}`)
 			.setDescription(localizer.__("`[[0]]` is not a valid domain.\nThis WHOIS only supports `.com`, `.net` and `.edu` TLDs.", { placeholders: [domain] }));
 
@@ -80,7 +80,7 @@ async function mainFunction(interaction, { config, createEmbed }) {
 
 		if (err) {
 			const errorEmbed = createEmbed()
-				.setColor("RED")
+				.setColor("Red")
 				.setTitle(`WHOIS - ${domain}`)
 				.setDescription(localizer._("An error occured."));
 
@@ -122,7 +122,7 @@ async function mainFunction(interaction, { config, createEmbed }) {
 		// Check if no data is returned (domain not found)
 		if (Object.keys(results).length === 0) {
 			const errorEmbed = createEmbed()
-				.setColor("RED")
+				.setColor("Red")
 				.setTitle(`WHOIS - ${domain}`)
 				.setDescription(localizer.__("Domain `[[0]]` not found.", { placeholders: [domain] }));
 
