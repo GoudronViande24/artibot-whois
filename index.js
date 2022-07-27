@@ -61,7 +61,7 @@ const localizer = new Localizer({
  * @param {CommandInteraction} interaction 
  * @param {Artibot} artibot 
  */
-async function mainFunction(interaction, { createEmbed }) {
+async function mainFunction(interaction, { createEmbed, log }) {
 	await interaction.deferReply({ ephemeral: true });
 	const domain = interaction.options.getString("domain");
 
@@ -163,19 +163,33 @@ async function mainFunction(interaction, { createEmbed }) {
 			var name = localizer._("Name not found");
 		};
 
-		const embed = createEmbed()
-			.setTitle(`WHOIS - ${domain}`)
-			.setDescription(`${localizer.__("Here are the results for [[0]]", { placeholders: [domain] })}\n[${localizer._("See complete list online")}](https://who.is/whois/${domain})`)
-			.addFields(
-				{ name: localizer._("Registrar"), value: `[${results.registrar}](${results.registrarURL})`, inline: true },
-				{ name: localizer._("Registrar WHOIS server"), value: results.registrarWHOISServer, inline: true },
-				{ name: localizer._("Domain registration date"), value: results.creationDate, inline: true },
-				{ name: localizer._("Email for abuse report"), value: results.registrarAbuseContactEmail, inline: true },
-				{ name: localizer._("Domain status (ICANN)"), value: status, inline: true },
-				{ name: localizer._("Owner's name"), value: name, inline: true },
-				{ name: localizer._("DNSSEC status"), value: results.dnssec, inline: true },
-				{ name: localizer._("DNS server(s)"), value: ns, inline: true }
-			);
+		const embed = createEmbed();
+
+		try {
+			embed
+				.setTitle(`WHOIS - ${domain}`)
+				.setDescription(`${localizer.__("Here are the results for [[0]]", { placeholders: [domain] })}\n[${localizer._("See complete list online")}](https://who.is/whois/${domain})`)
+				.addFields(
+					{ name: localizer._("Registrar"), value: `[${results.registrar}](${results.registrarURL})`, inline: true },
+					{ name: localizer._("Registrar WHOIS server"), value: results.registrarWHOISServer, inline: true },
+					{ name: localizer._("Domain registration date"), value: results.creationDate, inline: true },
+					{ name: localizer._("Email for abuse report"), value: results.registrarAbuseContactEmail, inline: true },
+					{ name: localizer._("Domain status (ICANN)"), value: status, inline: true },
+					{ name: localizer._("Owner's name"), value: name, inline: true },
+					{ name: localizer._("DNSSEC status"), value: results.dnssec, inline: true },
+					{ name: localizer._("DNS server(s)"), value: ns, inline: true }
+				);
+		} catch (e) {
+			log("WHOIS", e, "error");
+			return await interaction.editReply({
+				embeds: [
+					createEmbed()
+						.setColor("Red")
+						.setTitle("WHOIS")
+						.setDescription(localizer._("An error occured."))
+				]
+			});
+		}
 
 		if (results.reseller) {
 			embed.addFields({ name: localizer._("Reseller"), value: results.reseller, inline: true });
