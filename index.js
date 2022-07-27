@@ -1,7 +1,6 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
 import Artibot, { Module, SlashCommand } from "artibot";
 import Localizer from "artibot-localizer";
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import { createRequire } from 'module';
 import path from "path";
 import whois from "whois";
@@ -23,7 +22,7 @@ const { version } = require('./package.json');
  * @param {Artibot} artibot
  * @returns {Module}
  */
-export default ({config: {lang}}) => {
+export default ({ config: { lang } }) => {
 	localizer.setLocale(lang);
 
 	return new Module({
@@ -166,17 +165,19 @@ async function mainFunction(interaction, { config, createEmbed }) {
 		const embed = createEmbed()
 			.setTitle(`WHOIS - ${domain}`)
 			.setDescription(`${localizer.__("Here are the results for [[0]]", { placeholders: [domain] })}\n[${localizer._("See complete list online")}](https://who.is/whois/${domain})`)
-			.addField(localizer._("Registrar"), `[${results.registrar}](${results.registrarURL})`, true)
-			.addField(localizer._("Registrar WHOIS server"), results.registrarWHOISServer, true)
-			.addField(localizer._("Domain registration date"), results.creationDate, true)
-			.addField(localizer._("Email for abuse report"), results.registrarAbuseContactEmail, true)
-			.addField(localizer._("Domain status (ICANN)"), status, true)
-			.addField(localizer._("Owner's name"), name, true)
-			.addField(localizer._("DNSSEC status"), results.dnssec, true)
-			.addField(localizer._("DNS server(s)"), ns, true);
+			.addFields(
+				{ name: localizer._("Registrar"), value: `[${results.registrar}](${results.registrarURL})`, inline: true },
+				{ name: localizer._("Registrar WHOIS server"), value: results.registrarWHOISServer, inline: true },
+				{ name: localizer._("Domain registration date"), value: results.creationDate, inline: true },
+				{ name: localizer._("Email for abuse report"), value: results.registrarAbuseContactEmail, inline: true },
+				{ name: localizer._("Domain status (ICANN)"), value: status, inline: true },
+				{ name: localizer._("Owner's name"), value: name, inline: true },
+				{ name: localizer._("DNSSEC status"), value: results.dnssec, inline: true },
+				{ name: localizer._("DNS server(s)"), value: ns, inline: true }
+			);
 
 		if (results.reseller) {
-			embed.addField(localizer._("Reseller"), results.reseller, true);
+			embed.addFields({ name: localizer._("Reseller"), value: results.reseller, inline: true });
 		};
 
 		return await interaction.reply({
