@@ -62,6 +62,7 @@ const localizer = new Localizer({
  * @param {Artibot} artibot 
  */
 async function mainFunction(interaction, { createEmbed }) {
+	await interaction.deferReply({ ephemeral: true });
 	const domain = interaction.options.getString("domain");
 
 	if (!domain.endsWith(".com") && !domain.endsWith(".net") && !domain.endsWith(".edu")) {
@@ -70,7 +71,7 @@ async function mainFunction(interaction, { createEmbed }) {
 			.setTitle(`WHOIS - ${domain}`)
 			.setDescription(localizer.__("`[[0]]` is not a valid domain.\nThis WHOIS only supports `.com`, `.net` and `.edu` TLDs.", { placeholders: [domain] }));
 
-		return await interaction.reply({
+		return await interaction.editReply({
 			embeds: [errorEmbed],
 			ephemeral: true
 		});
@@ -84,7 +85,7 @@ async function mainFunction(interaction, { createEmbed }) {
 				.setTitle(`WHOIS - ${domain}`)
 				.setDescription(localizer._("An error occured."));
 
-			return await interaction.reply({
+			return await interaction.editReply({
 				embeds: [errorEmbed],
 				ephemeral: true
 			});
@@ -126,7 +127,7 @@ async function mainFunction(interaction, { createEmbed }) {
 				.setTitle(`WHOIS - ${domain}`)
 				.setDescription(localizer.__("Domain `[[0]]` not found.", { placeholders: [domain] }));
 
-			return await interaction.reply({
+			return await interaction.editReply({
 				embeds: [errorEmbed],
 				ephemeral: true
 			});
@@ -180,7 +181,7 @@ async function mainFunction(interaction, { createEmbed }) {
 			embed.addFields({ name: localizer._("Reseller"), value: results.reseller, inline: true });
 		};
 
-		return await interaction.reply({
+		return await interaction.editReply({
 			embeds: [embed]
 		});
 
