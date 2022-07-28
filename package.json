@@ -1,6 +1,6 @@
 {
   "name": "artibot-whois",
-  "version": "1.4.1",
+  "version": "2.0.0",
   "description": "WHOIS extension for Artibot",
   "main": "index.js",
   "scripts": {
@@ -31,6 +31,6 @@
     "whois": "^2.13.9"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.19"
   }
 }
