@@ -1,6 +1,6 @@
 {
   "name": "artibot-whois",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "WHOIS extension for Artibot",
   "main": "index.js",
   "scripts": {

@@ -34,6 +34,7 @@ export default ({ config: { lang } }) => {
 			"fr"
 		],
 		repo: "GoudronViande24/artibot-whois",
+		packageName: "artibot-whois",
 		parts: [
 			new SlashCommand({
 				id: "whois",
