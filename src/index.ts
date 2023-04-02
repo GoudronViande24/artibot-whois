@@ -57,7 +57,7 @@ const localizer = new Localizer({
 
 
 /** Function executed when the slash command is sent */
-async function mainFunction(interaction: ChatInputCommandInteraction<"cached">, { createEmbed }: Artibot): Promise<void> {
+async function mainFunction(interaction: ChatInputCommandInteraction<"cached">, { createEmbed, config: { debug } }: Artibot): Promise<void> {
 	await interaction.deferReply({ ephemeral: true });
 	const domain: string = interaction.options.getString("domain", true);
 
@@ -201,14 +201,15 @@ async function mainFunction(interaction: ChatInputCommandInteraction<"cached">, 
 		if (results.reseller) embed.addFields({ name: localizer._("Reseller"), value: results.reseller, inline: true });
 	} catch (e) {
 		log("WHOIS", e, "err");
-		await interaction.editReply({
-			embeds: [
-				createEmbed()
-					.setColor("Red")
-					.setTitle("WHOIS")
-					.setDescription(localizer._("An error occured."))
-			]
-		});
+		if (debug) console.error(e);
+			await interaction.editReply({
+				embeds: [
+					createEmbed()
+						.setColor("Red")
+						.setTitle("WHOIS")
+						.setDescription(localizer._("An error occured."))
+				]
+			});
 		return;
 	}
 
