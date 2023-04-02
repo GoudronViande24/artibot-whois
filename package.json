@@ -1,11 +1,19 @@
 {
   "name": "artibot-whois",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "WHOIS extension for Artibot",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "nodemon testing.js"
+    "test": "nodemon testing.js",
+    "build": "tsc",
+    "prepublish": "npm run build"
   },
+  "files": [
+    "dist/",
+    "locales.json",
+    "LICENSE"
+  ],
   "type": "module",
   "repository": {
     "type": "git",
@@ -27,10 +35,11 @@
   },
   "homepage": "https://github.com/GoudronViande24/artibot-whois#readme",
   "dependencies": {
-    "artibot": "^4.0.0",
+    "artibot": "^5.0.0",
     "whois": "^2.13.9"
   },
   "devDependencies": {
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "typescript": "^5.0.3"
   }
 }

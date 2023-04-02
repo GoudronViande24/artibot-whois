@@ -72,6 +72,14 @@
 
 		"Reseller": {
 			"fr": "Revendeur"
+		},
+
+		"Unknown status": {
+			"fr": "Statut inconnu"
+		},
+
+		"No nameservers": {
+			"fr": "Aucun serveur DNS"
 		}
 	}
 }
