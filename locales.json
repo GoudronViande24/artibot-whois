@@ -80,6 +80,10 @@
 
 		"No nameservers": {
 			"fr": "Aucun serveur DNS"
+		},
+
+		"Registrar WHOIS Server": {
+			"fr": "Serveur WHOIS du registraire"
 		}
 	}
 }
